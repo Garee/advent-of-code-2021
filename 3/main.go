@@ -67,6 +67,20 @@ func getBitCounts(lines []string) map[int]map[rune]int {
 	return bitCounts
 }
 
+func getMostCommonBit(pos int, bitCounts map[int]map[rune]int) byte {
+	if bitCounts[pos]['0'] > bitCounts[pos]['1'] {
+		return '0'
+	}
+	return '1'
+}
+
+func getLeastCommonBit(pos int, bitCounts map[int]map[rune]int) byte {
+	if bitCounts[pos]['0'] > bitCounts[pos]['1'] {
+		return '1'
+	}
+	return '0'
+}
+
 func partOne(lines []string) int64 {
 	bitCounts := getBitCounts(lines)
 
@@ -86,8 +100,36 @@ func partOne(lines []string) int64 {
 	return toDecimal(gamma) * toDecimal(epsilon)
 }
 
+func getRating(lines []string, getCommonBit func(pos int, bitCounts map[int]map[rune]int) byte) int64 {
+	for pos := 0; len(lines) > 1; pos++ {
+		bitCounts := getBitCounts(lines)
+		commonBit := getCommonBit(pos, bitCounts)
+
+		numbers := []string{}
+		for _, line := range lines {
+			bit := line[pos]
+			if bit == commonBit {
+				numbers = append(numbers, line)
+			}
+		}
+
+		lines = make([]string, len(numbers))
+		copy(lines, numbers)
+	}
+
+	rating := lines[0]
+	return toDecimal(rating)
+}
+
+func partTwo(lines []string) int64 {
+	oxygen := getRating(lines, getMostCommonBit)
+	co2 := getRating(lines, getLeastCommonBit)
+	return oxygen * co2
+}
+
 func main() {
 	fpath := parseArgs()
 	lines := readLines(fpath)
 	fmt.Println(partOne(lines))
+	fmt.Println(partTwo(lines))
 }
