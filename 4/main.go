@@ -141,8 +141,27 @@ func partOne(numbers []int, cards [][][]int) int {
 	return -1
 }
 
+func partTwo(numbers []int, cards [][][]int) int {
+	var idx int
+	var winningNumber int
+	for len(cards) > 1 {
+		idx, winningNumber = findWinningCard(numbers, cards)
+		cards = append(cards[:idx], cards[idx+1:]...)
+	}
+
+	idx, winningNumber = findWinningCard(numbers, cards)
+	return sumCard(cards[idx]) * winningNumber
+}
+
 func main() {
 	fpath := parseArgs()
 	numbers, cards := readLines(fpath)
-	fmt.Println(partOne(numbers, cards))
+
+	partOneCards := make([][][]int, len(cards))
+	copy(partOneCards, cards)
+	fmt.Println(partOne(numbers, partOneCards))
+
+	partTwoCards := make([][][]int, len(cards))
+	copy(partTwoCards, cards)
+	fmt.Println(partTwo(numbers, partTwoCards))
 }
